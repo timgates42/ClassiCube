@@ -12,6 +12,16 @@
   <application
       android:icon="@mipmap/ic_launcher"
       android:label="ClassiCube">
+	  
+	<provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.classicube.android.provider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/files" />
+        </provider>
 
     <activity android:name="com.classicube.MainActivity"
               android:label="ClassiCube"
