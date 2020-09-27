@@ -523,7 +523,7 @@ static void PerformScheduledTasks(double time) {
 }
 
 void Game_TakeScreenshot(void) {
-	String filename; char fileBuffer[240];
+	String filename; char fileBuffer[STRING_SIZE];
 	String path;     char pathBuffer[FILENAME_SIZE];
 	struct DateTime now;
 	cc_result res;
@@ -571,12 +571,12 @@ void Game_TakeScreenshot(void) {
 	Chat_Add1("&eTaken screenshot as: %s", &filename);
 
 #ifdef CC_BUILD_ANDROID
-	filename.length = 0;
-	JavaCall_String_String("shareScreenshot", &path, &filename);
-	if (!filename.length) return;
+	path.length = 0;
+	JavaCall_String_String("shareScreenshot", &filename, &path);
+	if (!path.length) return;
 	
 	Chat_AddRaw("&cError sharing screenshot");
-	Chat_Add1("  &c%s", &filename);
+	Chat_Add1("  &c%s", &path);
 #endif
 #endif
 }

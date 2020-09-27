@@ -34,7 +34,6 @@ import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import androidx.core.content.FileProvider;
 
 // implements InputQueue.Callback
 public class MainActivity extends Activity implements SurfaceHolder.Callback2 {
@@ -467,24 +466,24 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback2 {
 		// TODO: this fails because multiple dialog boxes show
 	}
 	
-	Uri getContentUri(String filePath) {
-		File file = new File(getExternalAppDir() + "/" + filePath);
-		return FileProvider.getUriForFile(getApplicationContext(), getPackageName() + ".provider", file);
+	Uri getContentUri(String filename) {
+		String path = getExternalAppDir() + "/screenshots/" + filename;
+		return ScreenshotsProvider.fileToUri(new File(path));
 	}
 	
-	public String shareScreenshot(String path) {
+	public String shareScreenshot(String filename) {
 		try {
 			Intent intent = new Intent();			
 			intent.setAction(Intent.ACTION_SEND);
 			intent.putExtra(Intent.EXTRA_TEXT, "Check out my app.");
-			intent.putExtra(Intent.EXTRA_STREAM, getContentUri(path));
+			intent.putExtra(Intent.EXTRA_STREAM, getContentUri(filename));
 			intent.setType("image/png");
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			startActivity(Intent.createChooser(intent, "share via"));
 		} catch (Exception ex) {
 			return ex.toString();
 		}
-		return getContentUri(path).toString();
+		return getContentUri(filename).toString();
 	}
 
 	// ======================================

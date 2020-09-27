@@ -14,14 +14,11 @@
       android:label="ClassiCube">
 	  
 	<provider
-            android:name="androidx.core.content.FileProvider"
+            android:name="com.classicube.ScreenshotsProvider"
             android:authorities="com.classicube.android.provider"
             android:grantUriPermissions="true"
             android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/files" />
-        </provider>
+    </provider>
 
     <activity android:name="com.classicube.MainActivity"
               android:label="ClassiCube"
