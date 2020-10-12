@@ -3033,6 +3033,7 @@ void Window_FreeFramebuffer(struct Bitmap* bmp) {
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #include <emscripten/key_codes.h>
+#include "Server.h"
 static cc_bool keyboardOpen, needResize, goingFullscreen;
 
 static void UpdateWindowBounds(void) {
@@ -3161,8 +3162,9 @@ static EM_BOOL OnCanvasResize(int type, const void* reserved, void *data) {
 }
 
 static const char* OnBeforeUnload(int type, const void* ev, void *data) {
-	Window_Close();
-	return NULL;
+	/* TODO: If world has not been modified, show message in chat like */
+	/* 'this is just a confirmation message. your changes have been saved. */
+	return Server.IsSinglePlayer ? "Unsaved changes will be lost" : NULL;
 }
 
 static int MapNativeKey(int k) {
@@ -3304,27 +3306,8 @@ static void HookEvents(void) {
 	emscripten_set_touchmove_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,   NULL, 0, OnTouchMove);
 	emscripten_set_touchend_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,    NULL, 0, OnTouchEnd);
 	emscripten_set_touchcancel_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 0, OnTouchEnd);
-}
 
-static void UnhookEvents(void) {
-	emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 0, NULL);
-	emscripten_set_mousedown_callback("#canvas",                  NULL, 0, NULL);
-	emscripten_set_mouseup_callback("#canvas",                    NULL, 0, NULL);
-	emscripten_set_mousemove_callback("#canvas",                  NULL, 0, NULL);
-
-	emscripten_set_focus_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,  NULL, 0, NULL);
-	emscripten_set_blur_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,   NULL, 0, NULL);
-	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 0, NULL);
-	emscripten_set_beforeunload_callback(                          NULL,    NULL);
-
-	emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,  NULL, 0, NULL);
-	emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,    NULL, 0, NULL);
-	emscripten_set_keypress_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 0, NULL);
-
-	emscripten_set_touchstart_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,  NULL, 0, NULL);
-	emscripten_set_touchmove_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,   NULL, 0, NULL);
-	emscripten_set_touchend_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW,    NULL, 0, NULL);
-	emscripten_set_touchcancel_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 0, NULL);
+	EM_ASM(window.addEventListener('unload', function(ev) { ccall('Window_Close', 'void'); }));
 }
 
 void Window_Init(void) {
@@ -3450,14 +3433,14 @@ void Window_SetSize(int width, int height) {
 	UpdateWindowBounds();
 }
 
-void Window_Close(void) {
+EMSCRIPTEN_KEEPALIVE void Window_Close(void) {
 	WindowInfo.Exists = false;
 	Event_RaiseVoid(&WindowEvents.Closing);
 	/* Don't want cursor stuck on the dead 0,0 canvas */
 	Window_DisableRawMouse();
 
+	emscripten_html5_remove_all_event_listeners();
 	Window_SetSize(0, 0);
-	UnhookEvents();
 }
 
 void Window_ProcessEvents(void) {
@@ -3511,7 +3494,7 @@ void Window_OpenKeyboard(int type)  {
 			elem = document.createElement('textarea');
 			elem.setAttribute('style', 'position:absolute; left:0; top:0; width:100%; height:100%; opacity:0.3; resize:none; pointer-events:none;');
 
-			elem.addEventListener("input", 
+			elem.addEventListener('input', 
 				function(ev) {
 					ccall('Window_OnTextChanged', 'void', ['string'], [ev.target.value]);
 				}, false);
