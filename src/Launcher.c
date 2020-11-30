@@ -532,8 +532,8 @@ void Launcher_ResetArea(int x, int y, int width, int height) {
 }
 
 void Launcher_ResetPixels(void) {
-	static const cc_string title_fore = String_FromConst("&eClassi&fCube");
-	static const cc_string title_back = String_FromConst("&0Classi&0Cube");
+	static const cc_string title_fore = String_FromConst("&cDe&ebug&fCube");
+	static const cc_string title_back = String_FromConst("&0Debug&0Cube");
 	struct DrawTextArgs args;
 	int x;
 

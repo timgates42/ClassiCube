@@ -11,16 +11,16 @@
 #if defined CC_BUILD_WEB
 #define GAME_APP_ALT   "ClassiCube web mobile"
 #define GAME_APP_NAME  "ClassiCube web"
-#define GAME_APP_TITLE "ClassiCube"
+#define GAME_APP_TITLE "DebugCube"
 #elif defined CC_BUILD_COCOA
 #define GAME_APP_NAME  "ClassiCube 1.2.1 alpha"
-#define GAME_APP_TITLE "ClassiCube 1.2.1 alpha"
+#define GAME_APP_TITLE "DebugCube 1.2.1 alpha"
 #elif defined CC_BUILD_ANDROID
 #define GAME_APP_NAME  "ClassiCube 1.2.1 android alpha"
-#define GAME_APP_TITLE "ClassiCube 1.2.1 android alpha"
+#define GAME_APP_TITLE "DebugCube 1.2.1 android alpha"
 #else
 #define GAME_APP_NAME  "ClassiCube 1.2.1"
-#define GAME_APP_TITLE "ClassiCube 1.2.1"
+#define GAME_APP_TITLE "DebugCube 1.2.1"
 #endif
 
 /* Max number of characters strings can have. */

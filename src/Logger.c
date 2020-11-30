@@ -251,7 +251,6 @@ void Logger_Backtrace(cc_string* trace, void* ctx) {
 			String_Format2(&str, "  line %i in %c\r\n", &line.LineNumber, line.FileName);
 		}
 #endif
-		Logger_Log(&str);
 	}
 	String_AppendConst(trace, _NL);
 }
@@ -338,6 +337,7 @@ static void DumpBacktrace(cc_string* str, void* ctx) {
 	static const cc_string backtrace = String_FromConst("-- backtrace --" _NL);
 	Logger_Log(&backtrace);
 	Logger_Backtrace(str, ctx);
+	Logger_Log(str);
 }
 
 
