@@ -320,13 +320,13 @@ struct D3D9Alloc {
 	void* Obj;
 	char* Type;
 	cc_string Backtrace;
-} allocs[10000];
+} allocs[50000];
 
 static void D3D9_LogAlloc(void* obj, char* type) {
 	char tmpBuffer[2048]; cc_string tmp = String_FromArray(tmpBuffer);
 	CONTEXT ctx;
 
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < Array_Elems(allocs); i++) {
 		if (allocs[i].Obj) continue;
 
 		Mem_Free(allocs[i].Backtrace.buffer);
@@ -351,7 +351,7 @@ static void D3D9_Dump(void) {
 
 	cc_string traces[80];
 
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < Array_Elems(allocs); i++) {
 		if (!allocs[i].Obj) continue;
 		String_InitArray(tmp, tmpBuffer);
 		String_Format2(&tmp, "D3D9 obj %x of %c type", allocs[i].Obj, allocs[i].Type);
@@ -367,7 +367,7 @@ static void D3D9_Dump(void) {
 }
 
 static void D3D9_RemAlloc(void* obj) {
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < Array_Elems(allocs); i++) {
 		if (allocs[i].Obj != obj) continue;
 
 		Mem_Free(allocs[i].Backtrace.buffer);
@@ -515,7 +515,7 @@ cc_bool Gfx_TryRestoreContext(void) {
 
 	if (res) {
 		D3D9_Dump();
-		Logger_Abort2(res, "Error recreating D3D9 context");
+		Logger_Abort2(res, "Error recreating D3D9 context! Check d3d9dump.log");
 	}
 	return true;
 }
